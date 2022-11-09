@@ -1,2 +1,3 @@
-# calculator
+# Calculator
+
 A little project which should act as a calculator
