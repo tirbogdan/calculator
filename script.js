@@ -4,6 +4,7 @@ const oldResultEl = document.querySelector(".old-result");
 const numButtonsList = document.querySelectorAll(".num-button");
 const deleteButtonEl = document.getElementById("delete-button");
 const acButtonEl = document.getElementById("ac-button");
+const changeSignEl = document.getElementById("change-sign");
 
 let actualNumber = 0;
 let oldNumber = 0;
@@ -15,6 +16,7 @@ function start() {
   addButtonsNumber();
   deleteButton();
   acButton();
+  signButton();
 }
 
 function addButtonsNumber() {
@@ -46,6 +48,17 @@ function acButton() {
   acButtonEl.addEventListener("click", () => {
     newResultEl.textContent = "0";
     actualNumber = 0;
+  });
+}
+
+function signButton() {
+  changeSignEl.addEventListener("click", () => {
+    if (newResultEl.textContent[0] === "-") {
+      newResultEl.textContent = newResultEl.textContent.slice(1);
+    } else {
+      newResultEl.textContent = "-" + newResultEl.textContent;
+    }
+    actualNumber *= -1;
     console.log(actualNumber);
   });
 }
