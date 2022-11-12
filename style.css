@@ -85,6 +85,8 @@ body {
 }
 
 .button {
+  text-decoration: none;
+  border: none;
   border-radius: 50%;
   width: 9vh;
   height: 9vh;
@@ -92,6 +94,14 @@ body {
   cursor: pointer;
   background-color: rgb(23 28 24);
   color: rgb(255, 255, 255);
+  outline: none;
+  transition: 0.2s all;
+}
+
+.button:active {
+  transform: scale(0.98);
+  transform: translateY(4px);
+  background-color: rgba(128, 151, 132, 0.7);
 }
 
 .orange-button {
