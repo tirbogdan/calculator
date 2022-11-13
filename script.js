@@ -4,7 +4,8 @@ const oldResultEl = document.querySelector(".old-result");
 const numButtonsList = document.querySelectorAll(".num-button");
 const deleteButtonEl = document.getElementById("delete-button");
 const acButtonEl = document.getElementById("ac-button");
-const changeSignEl = document.getElementById("change-sign");
+const changeSignButtonEl = document.getElementById("change-sign");
+const operationButtonsList = document.querySelectorAll(".operation-button");
 
 let actualNumber = 0;
 let oldNumber = 0;
@@ -17,6 +18,7 @@ function start() {
   deleteButton();
   acButton();
   signButton();
+  operationButtons();
 }
 
 function addButtonsNumber() {
@@ -52,7 +54,7 @@ function acButton() {
 }
 
 function signButton() {
-  changeSignEl.addEventListener("click", () => {
+  changeSignButtonEl.addEventListener("click", () => {
     if (newResultEl.textContent[0] === "-") {
       newResultEl.textContent = newResultEl.textContent.slice(1);
     } else {
@@ -60,6 +62,28 @@ function signButton() {
     }
     actualNumber *= -1;
     console.log(actualNumber);
+  });
+}
+
+function calculus(a, b, sign) {
+  switch (sign) {
+    case "+":
+      return a + b;
+    case "-":
+      return a - b;
+    case "%":
+      return (a % b).toFixed(5);
+    case "x":
+      return a * b;
+  }
+}
+
+function operationButtons() {
+  operationButtonsList.forEach((button) => {
+    button.addEventListener("click", () => {
+      signEl.textContent = button.dataset.operation;
+      console.log(calculus(actualNumber, oldNumber, button.dataset.operation));
+    });
   });
 }
 
