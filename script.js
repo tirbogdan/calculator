@@ -11,6 +11,7 @@ const equalEl = document.getElementById("equal");
 let actualNumber = 0;
 let oldNumber = 0;
 let oldSign;
+let wasEqual = 0;
 
 function start() {
   newResultEl.textContent = "0";
@@ -27,7 +28,11 @@ function start() {
 function addButtonsNumber() {
   numButtonsList.forEach((button) => {
     button.addEventListener("click", () => {
-      if (newResultEl.textContent === "0") newResultEl.textContent = "";
+      if (newResultEl.textContent === "0" || wasEqual === 1) {
+        newResultEl.textContent = "";
+        wasEqual = 0;
+        actualNumber = 0;
+      }
       if (newResultEl.textContent.length < 10) {
         newResultEl.textContent += button.dataset.number;
         actualNumber = actualNumber * 10 + +button.dataset.number;
@@ -101,11 +106,17 @@ function operationButtons() {
   operationButtonsList.forEach((button) => {
     button.addEventListener("click", () => {
       if (oldResultEl.textContent === "") {
+        console.log(actualNumber);
         oldNumber = actualNumber;
         prepareForNextCalc(button);
       } else {
-        oldNumber = calculus(oldNumber, actualNumber, oldSign);
-        prepareForNextCalc(button);
+        if (newResultEl.textContent !== "0") {
+          oldNumber = calculus(oldNumber, actualNumber, oldSign);
+          prepareForNextCalc(button);
+        } else {
+          signEl.textContent = button.dataset.operation;
+          oldSign = button.dataset.operation;
+        }
       }
     });
   });
@@ -117,8 +128,8 @@ function equal() {
       newResultEl.textContent = calculus(oldNumber, actualNumber, oldSign);
       oldResultEl.textContent = "";
       signEl.textContent = "";
-      oldNumber = 0;
-      actualNumber = 0;
+      actualNumber = calculus(oldNumber, actualNumber, oldSign);
+      wasEqual = 1;
     }
   });
 }
