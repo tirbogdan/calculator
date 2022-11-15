@@ -6,6 +6,7 @@ const deleteButtonEl = document.getElementById("delete-button");
 const acButtonEl = document.getElementById("ac-button");
 const changeSignButtonEl = document.getElementById("change-sign");
 const operationButtonsList = document.querySelectorAll(".operation-button");
+const equalEl = document.getElementById("equal");
 
 let actualNumber = 0;
 let oldNumber = 0;
@@ -20,6 +21,7 @@ function start() {
   acButton();
   signButton();
   operationButtons();
+  equal();
 }
 
 function addButtonsNumber() {
@@ -87,25 +89,37 @@ function calculus(a, b, sign) {
   }
 }
 
+function prepareForNextCalc(button) {
+  actualNumber = 0;
+  newResultEl.textContent = 0;
+  oldResultEl.textContent = oldNumber;
+  signEl.textContent = button.dataset.operation;
+  oldSign = button.dataset.operation;
+}
+
 function operationButtons() {
   operationButtonsList.forEach((button) => {
     button.addEventListener("click", () => {
       if (oldResultEl.textContent === "") {
         oldNumber = actualNumber;
-        actualNumber = 0;
-        newResultEl.textContent = 0;
-        oldResultEl.textContent = oldNumber;
-        signEl.textContent = button.dataset.operation;
-        oldSign = button.dataset.operation;
+        prepareForNextCalc(button);
       } else {
-        signEl.textContent = button.dataset.operation;
         oldNumber = calculus(oldNumber, actualNumber, oldSign);
-        actualNumber = 0;
-        newResultEl.textContent = 0;
-        oldResultEl.textContent = oldNumber;
-        oldSign = button.dataset.operation;
+        prepareForNextCalc(button);
       }
     });
+  });
+}
+
+function equal() {
+  equalEl.addEventListener("click", () => {
+    if (oldResultEl.textContent !== "") {
+      newResultEl.textContent = calculus(oldNumber, actualNumber, oldSign);
+      oldResultEl.textContent = "";
+      signEl.textContent = "";
+      oldNumber = 0;
+      actualNumber = 0;
+    }
   });
 }
 
