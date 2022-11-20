@@ -28,6 +28,11 @@ function start() {
   pointButton();
 }
 
+function numberAfterDecimalPoint(number) {
+  const [_, decimalPart] = number.split(".");
+  return decimalPart.length;
+}
+
 function addButtonsNumber() {
   numButtonsList.forEach((button) => {
     button.addEventListener("click", () => {
@@ -37,15 +42,20 @@ function addButtonsNumber() {
         actualNumber = 0;
       }
       if (
-        +newResultEl.textContent <= 999999999 &&
-        +newResultEl.textContent >= -999999999
+        +(newResultEl.textContent + button.dataset.number) <= 999999999.99999 &&
+        +(newResultEl.textContent + button.dataset.number) >= -999999999.99999
       ) {
         if (newResultEl.textContent === "-0") {
           newResultEl.textContent = "";
           newResultEl.textContent += 0 - button.dataset.number;
         } else {
-          newResultEl.textContent += button.dataset.number;
-          actualNumber = +newResultEl.textContent;
+          if (
+            isFloat === false ||
+            numberAfterDecimalPoint(newResultEl.textContent) <= 4
+          ) {
+            newResultEl.textContent += button.dataset.number;
+            actualNumber = +newResultEl.textContent;
+          }
         }
       }
     });
