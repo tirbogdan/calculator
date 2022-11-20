@@ -65,11 +65,20 @@ function addButtonsNumber() {
 function deleteButton() {
   deleteButtonEl.addEventListener("click", () => {
     if (newResultEl.textContent !== "0") {
-      newResultEl.textContent = newResultEl.textContent.slice(0, -1);
-      actualNumber = parseFloat(newResultEl.textContent);
-      if (newResultEl.textContent === "") {
-        newResultEl.textContent = "0";
+      if (!newResultEl.textContent.includes("e")) {
+        newResultEl.textContent = newResultEl.textContent.slice(0, -1);
         actualNumber = parseFloat(newResultEl.textContent);
+        if (newResultEl.textContent === "") {
+          newResultEl.textContent = "0";
+          actualNumber = parseFloat(newResultEl.textContent);
+        }
+      } else {
+        actualNumber /= 10;
+        limitOutput(newResultEl, actualNumber);
+        if (newResultEl.textContent === "") {
+          newResultEl.textContent = "0";
+          actualNumber = parseFloat(newResultEl.textContent);
+        }
       }
     }
   });
@@ -119,7 +128,7 @@ function operate(a, b, sign) {
 function prepareForNextCalc(button) {
   actualNumber = 0;
   newResultEl.textContent = 0;
-  oldResultEl.textContent = oldNumber;
+  limitOutput(oldResultEl, oldNumber);
   signEl.textContent = button.dataset.operation;
   oldSign = button.dataset.operation;
 }
@@ -144,13 +153,21 @@ function operationButtons() {
   });
 }
 
+function limitOutput(contentName, contentValue) {
+  if (contentValue.toString().length <= 15) {
+    contentName.textContent = contentValue;
+  } else {
+    contentName.textContent = contentValue.toExponential(2);
+  }
+}
+
 function equal() {
   equalEl.addEventListener("click", () => {
     if (oldResultEl.textContent !== "") {
-      newResultEl.textContent = operate(oldNumber, actualNumber, oldSign);
+      actualNumber = operate(oldNumber, actualNumber, oldSign);
+      limitOutput(newResultEl, actualNumber);
       oldResultEl.textContent = "";
       signEl.textContent = "";
-      actualNumber = operate(oldNumber, actualNumber, oldSign);
       wasEqual = 1;
       isFloat = false;
     }
