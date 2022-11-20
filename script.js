@@ -147,9 +147,7 @@ function operationButtons() {
             oldSign === "%" &&
             operate(oldNumber, actualNumber, oldSign) === 0
           ) {
-            oldNumber = 0;
-            oldResultEl.textContent = "";
-            signEl.textContent = "";
+            resetCalculator();
             newResultEl.textContent =
               "I'm too dumb to calculate such small numbers";
           } else {
