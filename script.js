@@ -16,9 +16,7 @@ let wasEqual = 0;
 let isFloat = false;
 
 function start() {
-  newResultEl.textContent = "0";
-  signEl.textContent = "";
-  oldResultEl.textContent = "";
+  resetCalculator();
   addButtonsNumber();
   deleteButton();
   acButton();
@@ -179,9 +177,16 @@ function limitOutput(contentName, contentValue) {
 function equal() {
   equalEl.addEventListener("click", () => {
     if (oldResultEl.textContent !== "") {
-      if (actualNumber === 0) {
+      if (actualNumber === 0 && oldSign === "%") {
         resetCalculator();
         newResultEl.textContent = "Not how math works";
+      } else if (
+        oldSign === "%" &&
+        operate(oldNumber, actualNumber, oldSign) === 0
+      ) {
+        resetCalculator();
+        newResultEl.textContent =
+          "I'm too dumb to calculate such small numbers";
       } else {
         actualNumber = operate(oldNumber, actualNumber, oldSign);
         limitOutput(newResultEl, actualNumber);
