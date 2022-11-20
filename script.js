@@ -7,11 +7,13 @@ const acButtonEl = document.getElementById("ac-button");
 const changeSignButtonEl = document.getElementById("change-sign");
 const operationButtonsList = document.querySelectorAll(".operation-button");
 const equalEl = document.getElementById("equal");
+const pointEl = document.getElementById("point");
 
 let actualNumber = 0;
 let oldNumber = 0;
 let oldSign;
 let wasEqual = 0;
+let isFloat = false;
 
 function start() {
   newResultEl.textContent = "0";
@@ -23,6 +25,7 @@ function start() {
   signButton();
   operationButtons();
   equal();
+  pointButton();
 }
 
 function addButtonsNumber() {
@@ -33,9 +36,17 @@ function addButtonsNumber() {
         wasEqual = 0;
         actualNumber = 0;
       }
-      if (newResultEl.textContent.length < 10) {
-        newResultEl.textContent += button.dataset.number;
-        actualNumber = actualNumber * 10 + +button.dataset.number;
+      if (
+        +newResultEl.textContent <= 999999999 &&
+        +newResultEl.textContent >= -999999999
+      ) {
+        if (newResultEl.textContent === "-0") {
+          newResultEl.textContent = "";
+          newResultEl.textContent += 0 - button.dataset.number;
+        } else {
+          newResultEl.textContent += button.dataset.number;
+          actualNumber = +newResultEl.textContent;
+        }
       }
     });
   });
@@ -61,6 +72,7 @@ function acButton() {
     signEl.textContent = "";
     oldNumber = 0;
     actualNumber = 0;
+    isFloat = false;
   });
 }
 
@@ -81,7 +93,7 @@ function rounding(n, number) {
   return Math.round((number + Number.EPSILON) * d) / d;
 }
 
-function calculus(a, b, sign) {
+function operate(a, b, sign) {
   switch (sign) {
     case "+":
       return a + b;
@@ -106,18 +118,18 @@ function operationButtons() {
   operationButtonsList.forEach((button) => {
     button.addEventListener("click", () => {
       if (oldResultEl.textContent === "") {
-        console.log(actualNumber);
         oldNumber = actualNumber;
         prepareForNextCalc(button);
       } else {
         if (newResultEl.textContent !== "0") {
-          oldNumber = calculus(oldNumber, actualNumber, oldSign);
+          oldNumber = operate(oldNumber, actualNumber, oldSign);
           prepareForNextCalc(button);
         } else {
           signEl.textContent = button.dataset.operation;
           oldSign = button.dataset.operation;
         }
       }
+      isFloat = false;
     });
   });
 }
@@ -125,13 +137,25 @@ function operationButtons() {
 function equal() {
   equalEl.addEventListener("click", () => {
     if (oldResultEl.textContent !== "") {
-      newResultEl.textContent = calculus(oldNumber, actualNumber, oldSign);
+      newResultEl.textContent = operate(oldNumber, actualNumber, oldSign);
       oldResultEl.textContent = "";
       signEl.textContent = "";
-      actualNumber = calculus(oldNumber, actualNumber, oldSign);
+      actualNumber = operate(oldNumber, actualNumber, oldSign);
       wasEqual = 1;
+      isFloat = false;
     }
   });
 }
+
+function pointButton() {
+  pointEl.addEventListener("click", () => {
+    if (isFloat === false) {
+      isFloat = true;
+      newResultEl.textContent += ".";
+    }
+  });
+}
+
+//TODO handle when the actual number is 0 and you press -/+
 
 start();
