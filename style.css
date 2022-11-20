@@ -61,6 +61,7 @@ body {
 
 .new-result {
   margin-bottom: 5%;
+  text-align: right;
 }
 
 .old-result {

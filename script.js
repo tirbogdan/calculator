@@ -84,14 +84,18 @@ function deleteButton() {
   });
 }
 
+function resetCalculator() {
+  newResultEl.textContent = "0";
+  oldResultEl.textContent = "";
+  signEl.textContent = "";
+  oldNumber = 0;
+  actualNumber = 0;
+  isFloat = false;
+}
+
 function acButton() {
   acButtonEl.addEventListener("click", () => {
-    newResultEl.textContent = "0";
-    oldResultEl.textContent = "";
-    signEl.textContent = "";
-    oldNumber = 0;
-    actualNumber = 0;
-    isFloat = false;
+    resetCalculator();
   });
 }
 
@@ -109,7 +113,7 @@ function signButton() {
 function rounding(n, number) {
   // n for how many decimals and number for the number you want to round
   const d = Math.pow(10, n);
-  return Math.round((number + Number.EPSILON) * d) / d;
+  return Math.trunc((number + Number.EPSILON) * d) / d;
 }
 
 function operate(a, b, sign) {
@@ -119,7 +123,7 @@ function operate(a, b, sign) {
     case "-":
       return a - b;
     case "%":
-      return a % b === 0 ? a / b : rounding(5, a / b);
+      return rounding(5, a / b);
     case "x":
       return a * b;
   }
@@ -141,8 +145,19 @@ function operationButtons() {
         prepareForNextCalc(button);
       } else {
         if (newResultEl.textContent !== "0") {
-          oldNumber = operate(oldNumber, actualNumber, oldSign);
-          prepareForNextCalc(button);
+          if (
+            oldSign === "%" &&
+            operate(oldNumber, actualNumber, oldSign) === 0
+          ) {
+            oldNumber = 0;
+            oldResultEl.textContent = "";
+            signEl.textContent = "";
+            newResultEl.textContent =
+              "I'm too dumb to calculate such small numbers";
+          } else {
+            oldNumber = operate(oldNumber, actualNumber, oldSign);
+            prepareForNextCalc(button);
+          }
         } else {
           signEl.textContent = button.dataset.operation;
           oldSign = button.dataset.operation;
@@ -164,12 +179,17 @@ function limitOutput(contentName, contentValue) {
 function equal() {
   equalEl.addEventListener("click", () => {
     if (oldResultEl.textContent !== "") {
-      actualNumber = operate(oldNumber, actualNumber, oldSign);
-      limitOutput(newResultEl, actualNumber);
-      oldResultEl.textContent = "";
-      signEl.textContent = "";
-      wasEqual = 1;
-      isFloat = false;
+      if (actualNumber === 0) {
+        resetCalculator();
+        newResultEl.textContent = "Not how math works";
+      } else {
+        actualNumber = operate(oldNumber, actualNumber, oldSign);
+        limitOutput(newResultEl, actualNumber);
+        oldResultEl.textContent = "";
+        signEl.textContent = "";
+        wasEqual = 1;
+        isFloat = false;
+      }
     }
   });
 }
@@ -182,7 +202,5 @@ function pointButton() {
     }
   });
 }
-
-//TODO handle when the actual number is 0 and you press -/+
 
 start();
