@@ -16,22 +16,59 @@ let wasEqual = 0;
 let isFloat = false;
 let isText = false;
 
-function start() {
-  resetCalculator();
-  addButtonsNumber();
-  deleteButton();
-  acButton();
-  signButton();
-  operationButtons();
-  equal();
-  pointButton();
-}
-
+//Auxiliary functions
+///////////////////////////////////////////
 function numberAfterDecimalPoint(number) {
   const [_, decimalPart] = number.split(".");
   return decimalPart.length;
 }
 
+function resetCalculator() {
+  newResultEl.textContent = "0";
+  oldResultEl.textContent = "";
+  signEl.textContent = "";
+  oldNumber = 0;
+  actualNumber = 0;
+  isFloat = false;
+  isText = false;
+}
+
+function rounding(n, number) {
+  // n for how many decimals and number for the number you want to round
+  const d = Math.pow(10, n);
+  return Math.trunc((number + Number.EPSILON) * d) / d;
+}
+
+function operate(a, b, sign) {
+  switch (sign) {
+    case "+":
+      return a + b;
+    case "-":
+      return a - b;
+    case "%":
+      return rounding(5, a / b);
+    case "x":
+      return a * b;
+  }
+}
+
+function prepareForNextCalc(button) {
+  actualNumber = 0;
+  newResultEl.textContent = 0;
+  limitOutput(oldResultEl, oldNumber);
+  signEl.textContent = button.dataset.operation;
+  oldSign = button.dataset.operation;
+}
+
+function limitOutput(contentName, contentValue) {
+  if (contentValue.toString().length <= 15) {
+    contentName.textContent = contentValue;
+  } else {
+    contentName.textContent = contentValue.toExponential(2);
+  }
+}
+//Buttons function
+///////////////////////////////////////////
 function addButtonsNumber() {
   numButtonsList.forEach((button) => {
     button.addEventListener("click", () => {
@@ -92,16 +129,6 @@ function deleteButton() {
   });
 }
 
-function resetCalculator() {
-  newResultEl.textContent = "0";
-  oldResultEl.textContent = "";
-  signEl.textContent = "";
-  oldNumber = 0;
-  actualNumber = 0;
-  isFloat = false;
-  isText = false;
-}
-
 function acButton() {
   acButtonEl.addEventListener("click", () => {
     resetCalculator();
@@ -121,33 +148,6 @@ function signButton() {
       actualNumber *= -1;
     }
   });
-}
-
-function rounding(n, number) {
-  // n for how many decimals and number for the number you want to round
-  const d = Math.pow(10, n);
-  return Math.trunc((number + Number.EPSILON) * d) / d;
-}
-
-function operate(a, b, sign) {
-  switch (sign) {
-    case "+":
-      return a + b;
-    case "-":
-      return a - b;
-    case "%":
-      return rounding(5, a / b);
-    case "x":
-      return a * b;
-  }
-}
-
-function prepareForNextCalc(button) {
-  actualNumber = 0;
-  newResultEl.textContent = 0;
-  limitOutput(oldResultEl, oldNumber);
-  signEl.textContent = button.dataset.operation;
-  oldSign = button.dataset.operation;
 }
 
 function operationButtons() {
@@ -184,15 +184,7 @@ function operationButtons() {
   });
 }
 
-function limitOutput(contentName, contentValue) {
-  if (contentValue.toString().length <= 15) {
-    contentName.textContent = contentValue;
-  } else {
-    contentName.textContent = contentValue.toExponential(2);
-  }
-}
-
-function equal() {
+function equalButton() {
   equalEl.addEventListener("click", () => {
     if (isText === true) {
       resetCalculator();
@@ -236,4 +228,16 @@ function pointButton() {
   });
 }
 
-start();
+//Start point
+//////////////////////////////////////////////////////////////////////////
+
+(function () {
+  resetCalculator();
+  addButtonsNumber();
+  deleteButton();
+  acButton();
+  signButton();
+  operationButtons();
+  equalButton();
+  pointButton();
+})();
